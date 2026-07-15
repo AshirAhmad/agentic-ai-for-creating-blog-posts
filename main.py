@@ -3,7 +3,7 @@
 #agent c tests the quality of the draft
 #all agent prompts are dictionaries with role = system
 from system_prompts import agentC_system_prompt, agentB_system_prompt,agentA_system_prompt
-
+import sys
 #creating client that sends the prompts and receives the responses
 from groq import Groq
 client = Groq()
@@ -12,8 +12,24 @@ conversation_history = [
                         ]
 #taking prompt from the user for the topic
 prompt = input("enter your prompt :")
+completion = client.chat.completions.create(
+    model="meta-llama/llama-prompt-guard-2-86m",
+    messages=[
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ])
+prompt_report = round(float(completion.choices[0].message.content))
+
+if prompt_report ==1:
+    print("malicious prompt insertion detected closing the program")
+    sys.exit()
 user_prompt = {"role":"user",
                "content":prompt}
+
+
+
 
 #first agent who creates an outline for the blog no loop required here
 completion = client.chat.completions.create(
